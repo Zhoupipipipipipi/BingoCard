@@ -1,62 +1,64 @@
-window.onload=initAll;               //页面加载后调用这个函数
-var usedNums=new Array(76);          //定义可用的数字,全部为false
+window.onload=initAll;
+var usedCard=new Array(76);
 
 function initAll(){
-	if(document.getElementById){            //检查浏览器是否可以使用
-		document.getElementById('reload').onclick=anotherCard;
+	if(document.getElementById){                    //判断浏览器是否支持js
+		document.getElementById('reload').onclick=getNewCard;    //点击获得新的bingo卡片
 		newCard();
 	}
-	else 
-		alert('Sorry,your browser does not support this script');
-}
-
-function newCard(){                //往表格中填写数字
-	for(var i=0;i<24;i++)
-		setSquare(i);
-}
-
-function setSquare(thisSquare){       //数字
-	var currSquare="square"+thisSquare;           //squarei
-	var colPlace=[0,0,0,0,0,1,1,1,1,1,2,2,2,2,2,3,3,3,3,3,4,4,4,4,4];
-	var colBasis=colPlace[thisSquare]*15;
-	var newNum;
-
-	do{                             //如果newNum已存在，就+1
-		newNum=colBasis+getNewNum()+1;
+	else{
+		alert('Your Browser does not support this script!');
 	}
-	while(usedNums[newNum]);
-
-	usedNums[newNum]=true;
-	document.getElementById(currSquare).innerHTML=newNum;
-	document.getElementById(currSquare).className='';           //确保Bingo卡片最初是空的
-	document.getElementById(currSquare).onmousedown=toggleColor;        
 }
 
-function getNewNum(){           //得到数字
-	return Math.floor(Math.random()*15);
-}
-
-function anotherCard(){
-	for(var i=1;i<usedNums.length;i++){        //把已经用过的数字都改为false
-		usedNums[i]=false;
+function newCard(){
+	var i;
+	for(i=0;i<24;i++){
+		square(i);
 	}
+}
+
+function square(thissquare){
+	var squareName='square'+thissquare;
+	var colNum=[0,0,0,0,0,1,1,1,1,1,2,2,2,2,2,3,3,3,3,3,4,4,4,4,4];  //确保第一行15以内，第二行15-30 以此类推
+	var squareNum=colNum[thissquare]*15+Math.floor(Math.random()*15);   //15*colnum+随机
+
+	do{                     //保证没有出现重复值
+		squareNum=squareNum+1;          
+	}
+	while(usedCard[squareNum]);
+
+	usedCard[squareNum]=true;              //把用过的数字改为true
+
+	document.getElementById(squareName).innerHTML=squareNum;
+	document.getElementById(squareName).className='';       //确保卡片的className为空，便于对颜色做修改
+	document.getElementById(squareName).onmousedown=clickCard;  //点击卡片颜色发生变化
+}
+
+function getNewCard(){            //获得一张新的卡片
+	for(var i=0;i<76;i++)
+		usedCard[i]=false;
 
 	newCard();
-	return false;
+	return false;            //不加载html href指向的页面
 }
 
-function toggleColor(evt){
+function clickCard(evt){
 	if(evt){
-		var thisSquare=evt.target;           //返回触发事件的函数
+		var ThisSquare=evt.target;          //一般浏览器的触发事件
 	}
 	else{
-		var thisSquare=window.event.srcElement;
+		var ThisSquare=window.event.srcElement;         //IE浏览器必须查看才能触发事件
 	}
-	if(thisSquare.className==''){
-		thisSquare.className='pickedBG';
+	if(ThisSquare.className==''){           //通过修改classname修改背景颜色
+		ThisSquare.className='pickedBG';
 	}
-	else{
-		thisSquare.className='';
-	}
+	else
+		ThisSquare.className='';
+
+	checkWin();
 }
 
+function checkWin(){             //检查是否胜利
+    //...
+}
